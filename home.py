@@ -18,17 +18,35 @@ import time
 import urllib
 import wsgiref.handlers
 
+# From evernote API
+import sys
+import hashlib
+import binascii
+import time
+import thrift.protocol.TBinaryProtocol as TBinaryProtocol
+import thrift.transport.THttpClient as THttpClient
+import evernote.edam.userstore.UserStore as UserStore
+import evernote.edam.userstore.constants as UserStoreConstants
+import evernote.edam.notestore.NoteStore as NoteStore
+import evernote.edam.type.ttypes as Types
+import evernote.edam.error.ttypes as Errors
+
 import json
 _parse_json = json.loads
 
+# our stuff
+from util import *
+from getnotebooks import *
+from createmeetings import *
 
-class Room(db.Model):
+class Meeting(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
-    updated = db.DateTimeProperty(auto_now=True)    
-    name = db.StringProperty(required=False)
-    lat = db.StringProperty(required=False)
-    lon = db.StringProperty(required=False)
-    currentnumber = db.IntegerProperty(required=False)
+    #updated = db.DateTimeProperty(auto_now=True)    
+    # name = db.StringProperty(required=False)
+    # lat = db.StringProperty(required=False)
+    # lon = db.StringProperty(required=False)
+    # currentnumber = db.IntegerProperty(required=False)
+    noteGuid = db.StringProperty(required=False)
     
 class Message(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
@@ -39,10 +57,6 @@ class Message(db.Model):
     messagetext = db.StringProperty(required=False)
     votetarget = db.StringProperty(required=False)
     votetype = db.StringProperty(required=False)
-
-class BaseHandler(webapp2.RequestHandler):
-  def teste(self):
-    return 0;
   
 class Home(BaseHandler):
   def get(self):
@@ -202,16 +216,18 @@ class RecoverMessages(BaseHandler):
           m['votetype'] = message.votetype
           result.append(m)
     self.response.out.write(json.dumps(result))
-    
-    
+
 app = webapp2.WSGIApplication([
     ('/', Home), 
-    ('/createroom', CreateRoom),
-    ('/getrooms', GetRooms),
-    ('/home', Home),
-    ('/newroom', NewRoom),
-    ('/createmessage', CreateMessage),
-    ('/recovermessages', RecoverMessages),
-    ('/chatroom', ChatRoom),
+    ('/getnotebooks', GetNotebooks),
+    ('/createmeeting', CreateMeeting )
+    # ('/createroom', CreateRoom),
+    # ('/getrooms', GetRooms),
+    # ('/home', Home),
+    # ('/newroom', NewRoom),
+    # ('/createmessage', CreateMessage),
+    # ('/recovermessages', RecoverMessages),
+    # ('/chatroom', ChatRoom),
+
     ],
   debug=True)
