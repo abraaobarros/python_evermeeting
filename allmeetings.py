@@ -49,7 +49,7 @@ class AllMeetings(BaseHandler):
         
         <link href="css/style.css" rel="stylesheet">
           
-          <title>Criar Reuniao</title>
+          <title>Create Meeting</title>
           <script type="text/javascript"> window.onload = function() {         
             function goToRoom(name){
               if ( $("#username").val() == "") {
@@ -81,10 +81,10 @@ class AllMeetings(BaseHandler):
               window.location = address;
             }
           function addTopic(){
-          $('#lista_topicos').append('<br/><input type="text" id="topic" name="topics[]" placeholder="Adicione um novo topico">' );
+          $('#lista_topicos').append('<br/><input type="text" id="topic" name="topics[]" placeholder="Add a new topic">' );
           }
           function addEmail(){
-          $('#lista_convidados').append('<br/><input type="text" id="email" name="email[]" placeholder="Adicione o email do convidado"> ' );
+          $('#lista_convidados').append('<br/><input type="text" id="email" name="email[]" placeholder="Add the person's email"> ' );
           }
 
           </script>
@@ -94,7 +94,8 @@ class AllMeetings(BaseHandler):
              <div class="navbar-inner">
               <a class="brand" href="#"><img alt="" src="layout/netSaleLogo.png" /></a>
               <ul class="nav">
-                <li class="active"><a href="#">Home</a></li>
+                <li><a href="/">Home</a></li>
+                <li class="active"><a href="#">All Meetings</a></li>
               </ul>
               <ul class="nav pull-right">
                 <li><a href="#">Login</a></li>

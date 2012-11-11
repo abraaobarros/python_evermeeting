@@ -44,10 +44,10 @@
         window.location = address;
       }
 	  function addTopic(){
-		$('#lista_topicos').append('<br/><input type="text" id="topic" name="topics[]" placeholder="Adicione um novo topico">' );
+		$('#lista_topicos').append('<br/><input type="text" id="topic" name="topics[]" placeholder="Add the meeting\'s topics">' );
 	  }
 	  function addEmail(){
-		$('#lista_convidados').append('<br/><input type="text" id="email" name="email[]" placeholder="Adicione o email do convidado"> ' );
+		$('#lista_convidados').append('<br/><input type="text" id="email" name="email[]" placeholder="Add the email"> ' );
 	  }
    
     </script>
@@ -57,7 +57,8 @@
 			 <div class="navbar-inner">
 				<a class="brand" href="#"><img alt="" src="layout/netSaleLogo.png" /></a>
 				<ul class="nav">
-				  <li class="active"><a href="#">Home</a></li>
+				  <li><a href="/">Home</a></li>
+				  <li><a href="/allmeetings">All Meetings</a></li>
 				</ul>
 				<ul class="nav pull-right">
 				  <li><a href="#">Login</a></li>
@@ -69,32 +70,32 @@
 	   <div class="span12">	
 			<form method="get" action="/createmeeting">
 			  <fieldset>
-				<legend>Criar nova Reunião</legend>
-				<label>Título:</label>
-				<input type="text" name="titulo" placeholder="Digite o título da reunião">
-				<label>Objetivo:</label>
-				<textarea name="objetivo" placeholder="Qual o objetivo da reunião"></textarea>
-				<label>Horário:</label>
+				<legend>Create a Meeting</legend>
+				<label>Title:</label>
+				<input type="text" name="titulo" placeholder="Type the title">
+				<label>Goal:</label>
+				<textarea name="objetivo" placeholder="What's the goal in one sentence?"></textarea>
+				<label>Schedule:</label>
 				<input type="text" name="horario" placeholder="23h50min">
-				<label>Duração:</label>
+				<label>Duration:</label>
 				<input type="text" name="duracao" placeholder="0 min">
-				<label>Data:</label>
+				<label>Date:</label>
 				<div class="input-append date" id="dp3" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
 				  <input class="span2" name="data" size="16" type="text" value="12-02-2012">
 				  <span class="add-on"><i class="icon-th"></i></span>
 				</div>
 				
-				<label>Local:</label>
-				<input type="text" name="local" placeholder="Lugar do encontro">
+				<label>Place:</label>
+				<input type="text" name="local" placeholder="Where it will be?">
 				<div id="lista_topicos">
-				<label>Topicos:</label>
-				<input type="text" name="topics[]"placeholder="Adicione os tópicos da reunião"> <a class="btn btn-success" onclick="addTopic()"  style="margin-top: -10px;">+</a> 
+				<label>Topics:</label>
+				<input type="text" name="topics[]"placeholder="Add the meeting's topics"> <a class="btn btn-success" onclick="addTopic()"  style="margin-top: -10px;">+</a> 
 				</div>
 				<div id="lista_convidados">
-				<label>Convidar pessoas:</label>
-				<input type="text" id="email" name="email[]" placeholder="Adicione o email do convidado">  <a id="addScnt" onclick="addEmail()" class="btn btn-success" style="margin-top: -10px;">+</a>
+				<label>Invite people</label>
+				<input type="text" id="email" name="email[]" placeholder="Add the email">  <a id="addScnt" onclick="addEmail()" class="btn btn-success" style="margin-top: -10px;">+</a>
 				</div>
-				<button type="submit" class="btn">Criar reunião</button>
+				<button type="submit" class="btn">Create</button>
 			  </fieldset>
 			</form>
 		</div>	
