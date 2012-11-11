@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="files/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="files/jquery.json-2.3.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <title>What's On</title>
+    
+    <script type="text/javascript">
+      function goToRoom(name){
+        if ( $("#username").val() == "") {
+          $("#username").parents("div.control-group").addClass("error");
+          alert("Please choose an username!");
+          return;
+        }
+        var username = $("#username").val() + "(" + (Math.random() * 100).toFixed(0) + ")";
+        window.location = "/chatroom?name=" + name + "&username=" + username;
+      } 
+      
+      function getRooms(){
+        $("#rooms").html("...");
+        $.ajax({
+        url: "/getrooms",
+        success : function(data) { 
+                    dados = $.parseJSON(data);
+                    var html = "";
+                    for (var i = 0; i < dados.length; i++) {
+                      html += "<button onclick=\"javascript:goToRoom(\'" + dados[i].name + "\')\" class=\"btn btn-default\"> " + dados[i].name + "</button> ";
+                    }
+                    $("#rooms").html(html);
+                  },
+        });
+      }
+      
+      function goToLink(address) {
+        window.location = address;
+      }
+    </script>
+</head>
+<body style="padding:10px">
+  <div class="control-group">
+    <label class="control-label" for="name">Username: </label>
+    <input id="username" type="text" placeholder="username" class="input-xlarge">
+  </div>
+  <hr> </hr>
+  <label class="control-label" for="name">Available Rooms: </label>
+  <div class="controls">
+    <div id="rooms"> </div>
+  </div>
+  </br></br>
+  <button onclick="javascript:getRooms();" class="btn btn-default"> Refresh </button> 
+  <hr> </hr>
+  <div class="controls">
+    <button onclick="javascript:goToLink('/newroom')" class="btn btn-default">Create New Room</button>
+  </div>
+  
+   <script type="text/javascript"> getRooms() </script>
+   <script src="js/bootstrap.js"></script>
+</body>
+</html>

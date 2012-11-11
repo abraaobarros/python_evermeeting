@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html  lang="en">
+  <head>
+    <title>Chat Room {{roomname}}</title>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="files/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="files/jquery.json-2.3.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://code.xrtml.org/xrtml-2.0.2.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+      var roomname = "{{roomname}}";
+      var username = "{{username}}";
+    </script>
+    
+    <style type="text/css">
+      .votebox{
+        float: right;
+      }
+      
+      .btnvote {
+        width: 25px;
+        height: 20px;
+        padding-top: 0px;
+        padding-left: 8px;
+      }
+    </style>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+    xRTML.Config.debug = true;
+
+		var connectionJSON = {
+			id:'myConnection',
+			appkey:'71NGsl',
+			authtoken:'86a9da0b4967470b9a20681e850ad19b',
+			url:'http://developers2.realtime.livehtml.net/server/2.1',
+			channels:[{name:'{{roomname}}'}]
+		}
+		xRTML.addEventListener('ready',function(){
+			xRTML.createConnection(connectionJSON);
+		});
+
+    var messages = {};
+    var number = 0;
+    
+		connectionJSON.onmessage = function(e){
+      message = $.parseJSON(e.message);
+      messages[message.number.toString()] = message;
+      if ( eval(message.number) + 1 > number) number = eval(message.number) + 1;
+      recoverMissing(false);
+		}
+
+    function recoverMissing(all) {
+      if (all == true) {
+        dados = { };
+        dados.room = "{{roomname}}";
+        dados.all = "true";
+        $.ajax({
+          url: "/recovermessages",
+          type: "POST",
+          data: dados,
+          success : function(data) { 
+                  missing = $.parseJSON(data);
+                  for(var i = 0; i < missing.length; i++) {
+                    messages[missing[i].number.toString()] = missing[i];
+                    if ( missing[i].number + 1 > number) number = missing[i].number + 1;
+                  }
+                  displayMessages();
+                },
+        });
+        return;
+      }
+      var missing = [];
+      for (var i = 0; i < number; i++) {
+        if (!( i.toString() in messages)){
+          missing.push(i);
+        }
+      }
+    
+      if(missing.length == 0) {
+        displayMessages();
+        return;
+      }
+      
+      dados = { };
+      dados.room = "{{roomname}}";
+      dados.all = "true";
+      dados.missing = $.toJSON(missing);
+      $.ajax({
+        url: "/recovermessages",
+        type: "POST",
+        data: dados,
+        success : function(data) { 
+                missing = $.parseJSON(data);
+                for(var i = 0; i < missing.length; i++) {
+                  messages[missing[i].number.toString()] = missing[i];
+                  if ( missing[i].number + 1 > number) number = missing[i].number + 1;
+                }
+                displayMessages();
+              },
+      });
+    }
+    
+		function sendMessage(type){
+      var dados = { };
+      dados.room = "{{roomname}}";
+      dados.user = "{{username}}";
+      dados.type = type;
+      
+      if(type == "m")
+        dados.messagetext = $("#newmessage").val();
+      if(type == "v")
+        dados.votetarget = 0; //TODO
+      $("#newmessage").val("")
+      
+      $.ajax({
+        url: "/createmessage",
+        type: "POST",
+        data: dados,
+        success : function(data) { 
+                dados.number = data;
+                broadcastMessage(dados);
+              },
+      });
+		}
+    
+    function broadcastMessage(message){
+      xRTML.sendMessage('{{roomname}}', $.toJSON(message));
+    }
+    
+    function btnVote(mIndex, vtype) {
+      var dados = { };
+      dados.room = "{{roomname}}";
+      dados.user = "{{username}}";
+      dados.type = "v";
+      dados.votetarget = mIndex;
+      dados.votetype = vtype;
+      
+      $.ajax({
+        url: "/createmessage",
+        type: "POST",
+        data: dados,
+        success : function(data) { 
+                dados.number = data;
+                if(data == -1) {
+                  alert("Already voted on this comment!");
+                  return;
+                }
+                broadcastMessage(dados);
+              },
+      });
+    }   
+    
+    var orderByVotes = false;
+    function displayMessages() {
+      var html = ""
+      for (var i = 0; i < number; i++) {
+        messages[i.toString()].votes = 0;
+      }
+      for (var i = 0; i < number; i++) {
+        var m = messages[i.toString()];
+        if(m.type == "v"){
+          if(m.votetype == "+")
+            messages[m.votetarget.toString()].votes += 1;
+          else 
+             messages[m.votetarget.toString()].votes -= 1;
+        }
+      }
+      
+      if (!orderByVotes) {
+        for (var i = 0; i < number; i++) {
+          var m = messages[i.toString()];
+          if(m.type != "m") continue;
+          var votebox = "<div class='votebox'>(" + m.votes.toString() + ") " +
+            "<button onclick=\"javascript:btnVote('" + i.toString() + "', '+' )\" class='btn btn-default btnvote'>+</button>" +
+            "<button onclick=\"javascript:btnVote('" + i.toString() + "', '-' )\" class='btn btn-default btnvote'>-</button> </div>";
+          
+          html += "<div style='clear:both'>" + votebox + m.user + ": " + m.messagetext + "</div>";
+        }
+      } else {
+        used = { }
+        for (var t = 0; t < number; t++) {
+          max = -2000000000;
+          maxi = -1;
+          for (var i = 0; i < number; i++) {
+            var m = messages[i.toString()];
+            if(m.type != "m") continue;
+            if(i in used) continue;
+            if(m.votes > max) {
+              max = m.votes;
+              maxi = i;
+            }
+          }
+        
+          if(maxi == -1) continue;
+          used[maxi] = 0;
+          
+          var m = messages[maxi.toString()];
+          if(m.type != "m") continue;
+          var votebox = "<div class='votebox'>(" + m.votes.toString() + ") " +
+            "<button onclick=\"javascript:btnVote('" + maxi.toString() + "', '+' )\" class='btn btn-default btnvote'>+</button>" +
+            "<button onclick=\"javascript:btnVote('" + maxi.toString() + "', '-' )\" class='btn btn-default btnvote'>-</button> </div>";
+          html += "<div style='clear:both'>" + votebox + m.user + ": " + m.messagetext + "</div>";
+        }
+      }
+      
+      $("#messages").html(html);
+    }
+    
+    function setOrderByTime() {
+      orderByVotes = false;
+      displayMessages();
+    }
+    
+    function setOrderByVotes() {
+      orderByVotes = true;
+      displayMessages();
+    }
+
+    recoverMissing(true);
+    </script>
+  
+	  	  <div id="legend" class="">
+	        <legend style="margin-left:10px; width:380px" class="">
+            Room: {{roomname}} <a href="/"> (Leave) </a> </br> 
+            Username: {{username}} </br> 
+          </legend>
+	      </div>
+        
+        <div class="control-group" style="margin-left:10px">
+          <div class="controls">
+            <input id="newmessage" style="width:370px" type="text" placeholder="New Message" class="input-xlarge">
+          </div>
+          <div class="controls">
+            <button onclick="javascript:sendMessage('m')" class="btn btn-default">Send</button>
+          </div>
+        </div>
+        
+        <hr style="margin-left:10px"> </hr>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button onclick="javascript:setOrderByTime()" class="btn btn-default">Sort by Time</button>
+        <button onclick="javascript:setOrderByVotes()" class="btn btn-default">Sort by Votes</button>
+        <div id="messages" style="margin-left:10px; margin-top:5px; overflow-y:auto; height: 345px; width:385px"> </div>
+        
+        
+      <script type="text/javascript"> 
+        $('#newmessage').bind('keypress', function(e) {
+          if(e.keyCode==13){
+            sendMessage('m');
+          }
+        });
+      </script>
+      <script src="js/bootstrap.js"></script>
+  </body>
+</html>
