@@ -1,0 +1,23 @@
+body{
+	text-align:center;
+}
+form{
+	text-align:left;
+	width:600px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.meet_title{
+	background-color: #EEE;
+	width: 200px;
+	text-align: center;
+	height: 122px;
+	padding-top: 59px;
+	font-family: Arial
+}
+
+.meet{
+	border:1px solid #ccc ;padding:5px; width:200px; display:inline-block;
+	margin: 3px;
+}
