@@ -31,6 +31,18 @@ import evernote.edam.notestore.NoteStore as NoteStore
 import evernote.edam.type.ttypes as Types
 import evernote.edam.error.ttypes as Errors
 
+#Models
+
+class Meeting(db.Model):
+    created = db.DateTimeProperty(auto_now_add=True)
+    #updated = db.DateTimeProperty(auto_now=True)    
+    # name = db.StringProperty(required=False)
+    # lat = db.StringProperty(required=False)
+    # lon = db.StringProperty(required=False)
+    data = db.StringProperty(required=False)
+    horario = db.StringProperty(required=False)
+    noteGuid = db.StringProperty(required=False)
+
 # Real applications authenticate with Evernote using OAuth, but for the
 # purpose of exploring the API, you can get a developer token that allows
 # you to access your own Evernote account. To get a developer token, visit 
@@ -57,9 +69,9 @@ def myGetUserNoteStore():
   versionOK = userStore.checkVersion("Evernote EDAMTest (Python)",
                                      UserStoreConstants.EDAM_VERSION_MAJOR,
                                      UserStoreConstants.EDAM_VERSION_MINOR)
-  print "Is my Evernote API version up to date? ", str(versionOK)
-  print ""
   if not versionOK:
+      print "Is my Evernote API version up to date? ", str(versionOK)
+      print ""
       exit(1)
 
   # Get the URL used to interact with the contents of the user's account

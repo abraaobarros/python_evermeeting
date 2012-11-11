@@ -38,15 +38,7 @@ _parse_json = json.loads
 from util import *
 from getnotebooks import *
 from createmeetings import *
-
-class Meeting(db.Model):
-    created = db.DateTimeProperty(auto_now_add=True)
-    #updated = db.DateTimeProperty(auto_now=True)    
-    # name = db.StringProperty(required=False)
-    # lat = db.StringProperty(required=False)
-    # lon = db.StringProperty(required=False)
-    # currentnumber = db.IntegerProperty(required=False)
-    noteGuid = db.StringProperty(required=False)
+from allmeetings import *
     
 class Message(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
@@ -217,12 +209,19 @@ class RecoverMessages(BaseHandler):
           result.append(m)
     self.response.out.write(json.dumps(result))
 
+class NewMeeting(BaseHandler): 
+  def get(self):
+    template_values = { }
+    path = os.path.join(os.path.dirname(__file__), 'newmeeting.html')
+    rendered = template.render(path, template_values)
+    self.response.out.write(rendered)
+
 app = webapp2.WSGIApplication([
     ('/', Home), 
     ('/getnotebooks', GetNotebooks),
-    ('/createmeeting', CreateMeeting )
-    # ('/createroom', CreateRoom),
-    # ('/getrooms', GetRooms),
+    ('/createmeeting', CreateMeeting ),
+    ('/allmeetings', AllMeetings ),
+    ('/newmeeting', NewMeeting),
     # ('/home', Home),
     # ('/newroom', NewRoom),
     # ('/createmessage', CreateMessage),

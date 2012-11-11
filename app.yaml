@@ -11,10 +11,12 @@ handlers:
   static_dir: css
 - url: /js
   static_dir: js
-  
+- url: /newMeeting.html
+  static_files: /newMeeting.html
+  upload: /newMeeting.html
 - url: /.*
   script: home.app
-  
+
 libraries:
 - name: jinja2
   version: latest

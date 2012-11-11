@@ -67,13 +67,15 @@
 	
 	<div class="row-fluid">
 	   <div class="span12">	
-			<form method="get">
+			<form method="get" action="/createmeeting">
 			  <fieldset>
 				<legend>Criar nova Reunião</legend>
 				<label>Título:</label>
 				<input type="text" name="titulo" placeholder="Digite o título da reunião">
 				<label>Objetivo:</label>
 				<textarea name="objetivo" placeholder="Qual o objetivo da reunião"></textarea>
+				<label>Horário:</label>
+				<input type="text" name="horario" placeholder="23h50min">
 				<label>Duração:</label>
 				<input type="text" name="duracao" placeholder="0 min">
 				<label>Data:</label>
@@ -83,7 +85,7 @@
 				</div>
 				
 				<label>Local:</label>
-				<input type="text" name="objetivo" placeholder="Qual o objetivo da reunião">
+				<input type="text" name="local" placeholder="Lugar do encontro">
 				<div id="lista_topicos">
 				<label>Topicos:</label>
 				<input type="text" name="topics[]"placeholder="Adicione os tópicos da reunião"> <a class="btn btn-success" onclick="addTopic()"  style="margin-top: -10px;">+</a> 
